@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Payment Confirmation — District by Zomato</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --brand-dark: #1a0b2e;
+    --brand-primary: #e23744;
+    --brand-purple: #5d2586;
+    --brand-purple-light: #f4eff9;
+    
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+    
+    --bg-body: #0f071a;
+    --bg-card: #ffffff;
+    --bg-subtle: #f9fafb;
+    
+    --border-light: #f3f4f6;
+    --border-medium: #e5e7eb;
+    
+    --success-bg: #ecfdf5;
+    --success-text: #059669;
+    --success-icon: #10b981;
+
+    --radius-lg: 24px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-body);
+    background-image: 
+      radial-gradient(circle at 15% 20%, rgba(93, 37, 134, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(226, 55, 68, 0.08) 0%, transparent 40%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .receipt-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 20px 40px -5px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- Header --- */
+  .header {
+    background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-purple) 100%);
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+  }
+
+  .logo {
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -1px;
+    font-style: italic;
+    margin-bottom: 4px;
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* --- Success State --- */
+  .success-block {
+    padding: 32px 24px 24px;
+    text-align: center;
+    border-bottom: 1px dashed var(--border-medium);
+  }
+
+  .icon-circle {
+    width: 56px;
+    height: 56px;
+    background: var(--success-bg);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .icon-circle svg {
+    width: 28px;
+    height: 28px;
+    stroke: var(--success-icon);
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .success-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 6px;
+  }
+
+  .success-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* --- Amount --- */
+  .amount-block {
+    padding: 32px 24px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .amount-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .amount-display {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -2px;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .currency {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0;
+  }
+
+  /* --- Details List --- */
+  .details-list {
+    padding: 8px 24px 24px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .detail-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding-top: 2px;
+  }
+
+  .detail-value {
+    font-size: 13px;
+    color: var(--text-main);
+    font-weight: 600;
+    text-align: right;
+    max-width: 65%;
+    line-height: 1.4;
+  }
+
+  .mono {
+    font-family: 'SF Mono', 'Roboto Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* --- Editable Fields --- */
+  .editable {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin: -4px -8px;
+    cursor: text;
+    transition: all 0.2s ease;
+    outline: none;
+    color: var(--text-main);
+  }
+
+  .editable:hover {
+    background: var(--brand-purple-light);
+    border-color: rgba(93, 37, 134, 0.1);
+  }
+
+  .editable:focus {
+    background: #fff;
+    border-color: var(--brand-purple);
+    box-shadow: 0 0 0 3px rgba(93, 37, 134, 0.1);
+  }
+
+  /* --- Payment Chip --- */
+  .pay-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-medium);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+  }
+
+  .card-icon {
+    width: 24px;
+    height: 16px;
+    background: #1a1f71;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .card-num {
+    font-family: 'SF Mono', monospace;
+    font-size: 12px;
+    color: var(--text-main);
+    font-weight: 500;
+  }
+
+  /* --- Total Row --- */
+  .total-row {
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-medium);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .total-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .total-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--brand-purple);
+    letter-spacing: -0.5px;
+  }
+
+  /* --- Footer --- */
+  .footer {
+    background: var(--bg-subtle);
+    padding: 24px;
+    text-align: center;
+    border-top: 1px solid var(--border-light);
+  }
+
+  .footer-text {
+    font-size: 11px;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .btn-download {
+    width: 100%;
+    padding: 14px;
+    background: var(--text-main);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-download:hover {
+    background: #000;
+    transform: translateY(-1px);
+  }
+
+  .btn-download svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 420px) {
+    body { padding: 16px; align-items: flex-start; }
+    .receipt-card { border-radius: 20px; }
+    .amount-display { font-size: 42px; }
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .receipt-card { box-shadow: none; border: 1px solid #eee; }
+    .btn-download { display: none; }
+    .editable { border: none !important; background: transparent !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="receipt-card">
+    
+    <div class="header">
+      <div class="logo">district</div>
+      <div class="logo-sub">by Zomato</div>
+    </div>
+
+    <div class="success-block">
+      <div class="icon-circle">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="success-title">Payment Successful</div>
+      <div class="success-desc">Transaction completed securely</div>
+    </div>
+
+    <div class="amount-block">
+      <div class="amount-label">Total Amount Paid</div>
+      <div class="amount-display">
+        <span class="currency">₹</span>
+        <span class="editable" contenteditable="true" id="amount">1,249</span>
+      </div>
+    </div>
+
+    <div class="details-list">
+      
+      <div class="detail-row">
+        <div class="detail-label">Restaurant</div>
+        <div class="detail-value editable" contenteditable="true" id="restaurant">District by Zomato, CP</div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Order ID</div>
+        <div class="detail-value mono">#DZ-2026-78432</div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Transaction ID</div>
+        <div class="detail-value mono">TXN8F3K92MPL47</div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Payment Method</div>
+        <div class="detail-value">
+          <div class="pay-chip">
+            <div class="card-icon">VISA</div>
+            <span class="card-num">•••• 4829</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">Date & Time</div>
+        <div class="detail-value editable" contenteditable="true" id="timestamp">02 Nov 2026, 7:42 PM</div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-label">GST (5%)</div>
+        <div class="detail-value">₹59.48</div>
+      </div>
+
+      <div class="total-row">
+        <div class="total-label">Grand Total</div>
+        <div class="total-value">₹1,249.00</div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <p class="footer-text">
+        This is a computer-generated receipt.<br>
+        Need help? Contact support@zomato.com
+      </p>
+      <button class="btn-download" onclick="window.print()">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download Receipt
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    function updateTimestamp() {
+      const now = new Date();
+      const date = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      let h = now.getHours();
+      const m = now.getMinutes().toString().padStart(2, '0');
+      const ap = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      document.getElementById('timestamp').textContent = `${date}, ${h}:${m} ${ap}`;
+    }
+    // updateTimestamp();
+
+    document.querySelectorAll('.editable').forEach(el => {
+      el.addEventListener('keydown', e => { 
+        if (e.key === 'Enter') { e.preventDefault(); el.blur(); } 
+      });
+    });
+  </script>
+
+</body>
+</html>
